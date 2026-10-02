@@ -11,6 +11,7 @@ from . import ai_session
 from . import ai_web_scraper_batch
 from . import ai_web_page
 from . import ir_attachment
+from . import ir_config_parameter
 from . import ir_model_fields
 from . import mail_composer_mixin
 from . import mail_message

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="ai_menu_root" name="AI" web_icon="ai_agentic,static/description/icon.png" groups="base.group_user_regular" sequence="50">
+    <menuitem id="ai_menu_root" name="AI" web_icon="ai_agentic,static/description/icon.png" groups="base.group_user" sequence="50">
         <menuitem id="ai_agent_menu_action" name="Agents" action="ai_agent_action" sequence="30"/>
         <menuitem id="ai_config_menu" name="Configuration" sequence="50">
             <menuitem id="ai_skill_menu_action" name="Skills" action="ai_skill_action" sequence="15"/>

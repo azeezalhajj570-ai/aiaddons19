@@ -67,9 +67,14 @@ class DiscussChannel(models.Model):
         super()._store_channel_fields(res)
         self._store_ai_fields(res)
 
-    def _sync_field_names(self, res):
-        super()._sync_field_names(res)
-        self._store_ai_fields(res[None])
+    def _sync_field_names(self):
+        # Odoo 20 changed this hook to `_sync_field_names(self, res: Store.FieldList)`
+        # and introduced the `_store_*_fields` mechanism. Odoo 19 instead returns a
+        # dict of subchannel -> Store.Attr/One/Many descriptors and has no FieldList.
+        # The AI store fields are not re-injected here yet: doing so requires the
+        # Odoo 20 Store layer (and the matching client-side JS). Kept as a passthrough
+        # so the web client keeps working.
+        return super()._sync_field_names()
 
     def _store_ai_fields(self, res: Store.FieldList):
         def is_ai_agent_channel(c):

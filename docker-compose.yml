@@ -21,6 +21,8 @@ services:
     container_name: odoo19-enterprise
     restart: unless-stopped
     entrypoint: ["/bin/bash", "/opt/odoo/entrypoint-custom.sh"]
+    # Setting `entrypoint` in compose clears the image CMD, so restate it.
+    command: ["odoo"]
     depends_on:
       - odoo19_db
     ports:

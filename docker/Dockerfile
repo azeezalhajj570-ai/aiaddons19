@@ -2,6 +2,9 @@ FROM norotec/odoo19-enterprise-bypass:enterprise
 
 USER root
 
+# The backported Odoo 20 AI modules render markdown through markdown2.
+RUN pip3 install --no-cache-dir --break-system-packages markdown2
+
 # Remove the Odoo 19 AI modules.
 # The AI stack is backported from Odoo 20 and shipped through /mnt/extra-addons.
 # The built-in 19 AI modules either auto-install against the new base (and thus

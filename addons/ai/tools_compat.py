@@ -114,6 +114,25 @@ except ImportError:
     MIMETYPE_HEAD_SIZE = 4096
 
 
+def _patch_iap_jsonrpc():
+    """Odoo 20 added the ``raise_user_error`` keyword to ``iap_jsonrpc``."""
+    from odoo.addons.iap.tools import iap_tools
+
+    original = iap_tools.iap_jsonrpc
+    if getattr(original, '_ai_compat', False):
+        return
+
+    def iap_jsonrpc(*args, **kwargs):
+        kwargs.pop('raise_user_error', None)
+        return original(*args, **kwargs)
+
+    iap_jsonrpc._ai_compat = True
+    iap_tools.iap_jsonrpc = iap_jsonrpc
+
+
+_patch_iap_jsonrpc()
+
+
 def _patch_mail_store():
     """``Store.FieldList`` (a typing alias for stored field lists) was introduced
     in 20 and is only used in annotations. Provide a placeholder so the modules
