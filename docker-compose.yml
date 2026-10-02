@@ -1,0 +1,49 @@
+services:
+
+  odoo19_db:
+    image: pgvector/pgvector:pg16
+    container_name: odoo19-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo19
+      POSTGRES_PASSWORD: odoo19
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - odoo19
+
+  odoo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: odoo19-enterprise-ai:19
+    container_name: odoo19-enterprise
+    restart: unless-stopped
+    entrypoint: ["/bin/bash", "/opt/odoo/entrypoint-custom.sh"]
+    depends_on:
+      - odoo19_db
+    ports:
+      - "8069:8069"
+      - "8071:8071"
+      - "8072:8072"
+    environment:
+      HOST: odoo19_db
+      USER: odoo19
+      PASSWORD: odoo19
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./entrypoint-custom.sh:/opt/odoo/entrypoint-custom.sh:ro
+      # Backported Odoo 20 AI modules (the built-in Odoo 19 AI modules are
+      # removed in docker/Dockerfile).
+      - ./addons:/mnt/extra-addons
+    networks:
+      - odoo19
+
+volumes:
+  postgres-data:
+  odoo-data:
+
+networks:
+  odoo19:
+    driver: bridge
