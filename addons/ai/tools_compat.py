@@ -136,11 +136,81 @@ _patch_iap_jsonrpc()
 def _patch_mail_store():
     """``Store.FieldList`` (a typing alias for stored field lists) was introduced
     in 20 and is only used in annotations. Provide a placeholder so the modules
-    can be imported on 19."""
+    can be imported on 19.
+
+    Odoo 20 additionally accepts a *callable* field builder as the ``fields``
+    argument of ``Store.add`` (``lambda res: res.attr(...) / res.one(...) /
+    res.many(...) / res.from_method(...)``) and ``comodel`` method names as
+    sub-field lists. Odoo 19 only understands a list of field names and
+    ``Store.Attr/One/Many`` descriptors. The shim below translates the 20
+    builder API into the 19 one so the backported ``_store_*_fields`` methods
+    keep working unmodified.
+    """
     from odoo.addons.mail.tools.discuss import Store
 
     if not hasattr(Store, 'FieldList'):
         Store.FieldList = dict
+
+    if getattr(Store.add, '_ai_compat', False):
+        return
+
+    class _FieldList:
+        """Odoo 20 ``Store.FieldList`` builder emulation for Odoo 19."""
+
+        def __init__(self, store, records):
+            self._store = store
+            self._records = records
+            self.fields = []
+
+        @property
+        def target(self):
+            return self._store.target
+
+        def attr(self, field_name, value=None, *, predicate=None, sudo=False):
+            self.fields.append(Store.Attr(field_name, value, predicate=predicate, sudo=sudo))
+            return self
+
+        def one(self, field_name, fields=None, *, predicate=None, sudo=False, value=None, **kwargs):
+            self.fields.append(
+                Store.One(field_name, fields, predicate=predicate, sudo=sudo, value=value, **kwargs)
+            )
+            return self
+
+        def many(self, field_name, fields=None, *, predicate=None, sudo=False, value=None, **kwargs):
+            self.fields.append(
+                Store.Many(field_name, fields, predicate=predicate, sudo=sudo, value=value, **kwargs)
+            )
+            return self
+
+        def extend(self, fields):
+            self.fields.extend(fields)
+            return self
+
+        def from_method(self, method_name):
+            getattr(self._records, method_name)(self)
+            return self
+
+    original_add = Store.add
+
+    def add(self, records, fields=None, extra_fields=None, as_thread=False, **kwargs):
+        if callable(fields) and not isinstance(fields, type):
+            builder = _FieldList(self, records)
+            fields(builder)
+            fields = builder.fields
+        elif isinstance(fields, str):
+            # Odoo 20 uses a method name (e.g. "_store_session_fields") to extend
+            # the field list, whereas Odoo 19 uses a plain field name. Only treat
+            # the string as a method when the model actually exposes one.
+            method = getattr(records, fields, None)
+            if callable(method):
+                builder = _FieldList(self, records)
+                method(builder)
+                fields = builder.fields
+        return original_add(self, records, fields, extra_fields, as_thread, **kwargs)
+
+    add._ai_compat = True
+    Store.add = add
+    Store.FieldList = _FieldList
 
 
 _patch_mail_store()

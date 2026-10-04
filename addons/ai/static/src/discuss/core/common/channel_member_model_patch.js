@@ -1,5 +1,5 @@
 import { ChannelMember } from "@mail/discuss/core/common/channel_member_model";
-import { fields } from "@mail/model/export";
+import { Record, fields } from "@mail/model/export";
 import { patch } from "@web/core/utils/patch";
 
 /** @type {import("models").ChannelMember} */
@@ -21,15 +21,11 @@ const channelMemberPatch = {
             },
             eager: true,
         });
-        this.onChange(
-            () => [this.isAiResponding],
-            function onChangeIsAiResponding(isAiResponding) {
-                if (this.isAiAgent) {
-                    this.isTyping = isAiResponding;
-                }
-            },
-            { immediate: true, initialRun: false },
-        );
+        Record.onChange(this, ["isAiResponding"], () => {
+            if (this.isAiAgent) {
+                this.isTyping = this.isAiResponding;
+            }
+        });
     },
     get isAiAgent() {
         return Boolean(this.channel_id?.ai_agent_id?.partner_id?.eq(this.partner_id));

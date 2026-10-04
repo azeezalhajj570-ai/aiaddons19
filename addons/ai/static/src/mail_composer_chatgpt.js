@@ -1,5 +1,3 @@
-import { getInnerHtml } from "@mail/utils/common/html";
-
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
@@ -46,7 +44,7 @@ export class MailComposerChatGPT extends Component {
                     const root = document.createElement("div");
                     root.appendChild(content);
                     const { body } = this.props.record.data;
-                    this.props.record.update({ body: htmlJoin([getInnerHtml(root), body]) });
+                    this.props.record.update({ body: htmlJoin([root.innerHTML, body]) });
                 },
                 selectPreviousInsertion: (selectionId) => false,
             },

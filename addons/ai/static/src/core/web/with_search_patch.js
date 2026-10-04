@@ -1,9 +1,9 @@
-import { t } from "@odoo/owl";
-import { WithSearch, withSearchProps } from "@web/search/with_search/with_search";
+import { WithSearch } from "@web/search/with_search/with_search";
 import { patch } from "@web/core/utils/patch";
 import { useDataGetter } from "@ai/utils/bus_data_getter";
 
-withSearchProps.ai = t.object().optional();
+// Odoo 19 declares `WithSearch.props` inline and has no `t` prop-type helper.
+WithSearch.props.ai = { type: Object, optional: true };
 
 patch(WithSearch.prototype, {
     setup() {

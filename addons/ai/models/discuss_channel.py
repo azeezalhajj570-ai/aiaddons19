@@ -64,7 +64,9 @@ class DiscussChannel(models.Model):
         ).unlink()
 
     def _store_channel_fields(self, res: Store.FieldList):
-        super()._store_channel_fields(res)
+        # Odoo 19 has no base `_store_channel_fields`; the standard channel fields
+        # come from `_to_store_defaults` instead (Odoo 20 chain via super()).
+        res.extend(self._to_store_defaults(res.target))
         self._store_ai_fields(res)
 
     def _sync_field_names(self):

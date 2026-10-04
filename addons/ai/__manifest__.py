@@ -32,6 +32,18 @@
             ('remove', 'ai/static/src/core/web/lazy/**'),
             ('remove', 'ai/static/src/core/audio/pcm16_audio_worklet.js'),
             ('remove', 'ai/static/src/**/*.dark.scss'),
+            # Odoo 20-only frontend with no Odoo 19 equivalent (Odoo 19 mail has
+            # no DiscussChannel class, messaging-menu model or call debrief).
+            ('remove', 'ai/static/src/core/html_editor/prompt_plugin.js'),
+            ('remove', 'ai/static/src/core/html_editor/fields/image_field_with_media_dialog_patch.js'),
+            ('remove', 'ai/static/src/core/html_editor/media_dialog/media_dialog_patch.js'),
+            ('remove', 'ai/static/src/discuss/messaging_menu_patch.js'),
+            ('remove', 'ai/static/src/discuss/messaging_menu_patch.xml'),
+            ('remove', 'ai/static/src/discuss/messaging_menu_model_patch.js'),
+            ('remove', 'ai/static/src/discuss/messaging_menu_ui_state_model_patch.js'),
+            ('remove', 'ai/static/src/discuss/discuss_channel_model_patch.js'),
+            ('remove', 'ai/static/src/views/fields/call_debrief/**'),
+            ('remove', 'ai/static/src/views/fields/discuss_call_history_indicators/**'),
             'web/static/lib/prismjs/prism.js',
             'web/static/lib/prismjs/themes/default.css',
         ],
@@ -67,6 +79,7 @@
         'web.assets_unit_tests': [
             'ai/static/tests/**/*',
             ('remove', 'ai/static/tests/tours/**/*'),
+            ('remove', 'ai/static/tests/discuss_call_history_indicators_field_patch.test.js'),
         ],
         'web.assets_tests': [
             'ai/static/tests/tours/**/*',

@@ -27,6 +27,16 @@
     'assets': {
         'web.assets_backend': [
             'ai_agentic/static/src/**/*',
+            # Odoo 20-only frontend with no Odoo 19 equivalent (Odoo 19 mail has
+            # no DiscussChannel class and no messaging-menu model).
+            ('remove', 'ai_agentic/static/src/discuss/messaging_menu_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/messaging_menu_model_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/messaging_menu_ui_state_model_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/discuss_app_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/discuss_app_patch.xml'),
+            ('remove', 'ai_agentic/static/src/discuss/discuss_client_action_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/thread_actions_patch.js'),
+            ('remove', 'ai_agentic/static/src/discuss/core/web/ai_agent_panel/**'),
         ],
         'web.assets_unit_tests': [
             'ai_agentic/static/tests/**/*',

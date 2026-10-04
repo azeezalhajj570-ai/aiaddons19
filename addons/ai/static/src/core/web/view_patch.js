@@ -1,4 +1,4 @@
-import { useSubEnv } from "@web/owl2/utils";
+import { useSubEnv } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { View } from "@web/views/view";
 

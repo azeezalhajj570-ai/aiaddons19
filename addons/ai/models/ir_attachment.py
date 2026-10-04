@@ -179,7 +179,7 @@ class IrAttachment(models.Model):
         return result
 
     def _store_attachment_fields(self, res: Store.FieldList, **kwargs):
-        super()._store_attachment_fields(res, **kwargs)
+        # Odoo 19 has no base `_store_attachment_fields`.
         media_fields = self._get_media_fields()
         for field in media_fields:
             res.attr(field)

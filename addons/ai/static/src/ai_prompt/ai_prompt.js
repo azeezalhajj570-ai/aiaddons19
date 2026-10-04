@@ -15,9 +15,8 @@ import { Wysiwyg } from "@html_editor/wysiwyg";
 import { Dialog } from "@web/core/dialog/dialog";
 import { localization } from "@web/core/l10n/localization";
 import { isHtmlEmpty } from "@web/core/utils/html";
-import { DebugModePlugin } from "@web/core/debug_mode_plugin";
 
-import { Component, markup, proxy, onPatched, t, usePlugin, useProps } from "@odoo/owl";
+import { Component, markup, proxy, onPatched, t, useProps } from "@odoo/owl";
 
 export class AiPrompt extends Component {
     static template = "ai.AiPrompt";
@@ -35,8 +34,6 @@ export class AiPrompt extends Component {
         missingRecordsWarning: t.string().optional(),
         updatePrompt: t.function().optional(),
     });
-
-    debugMode = usePlugin(DebugModePlugin);
 
     setup() {
         this.state = proxy({
@@ -88,7 +85,7 @@ export class AiPrompt extends Component {
     getConfig() {
         return {
             content: this.value,
-            debug: this.debugMode.isActive(),
+            debug: Boolean(this.env.debug),
             direction: localization.direction || "ltr",
             aiFieldPath: this.props.aiFieldPath,
             fieldSelectorResModel: this.props.model,

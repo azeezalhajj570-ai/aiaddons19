@@ -3,13 +3,11 @@ import { Thread } from "@mail/core/common/thread_model";
 import { isAiResponseInProgress } from "@ai/discuss/core/common/ai_session_model";
 import { patch } from "@web/core/utils/patch";
 import { getData } from "@ai/utils/bus_data_getter";
-import { fields } from "@mail/model/export";
 import { rpc } from "@web/core/network/rpc";
 
 patch(Thread.prototype, {
     setup() {
         super.setup();
-        this.ai_agent_id = fields.One("ai.agent");
         this.ai_session_config = {
             ai_prompt_button_ref: null,
         };

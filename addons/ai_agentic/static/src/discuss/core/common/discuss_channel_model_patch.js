@@ -1,10 +1,11 @@
-import { DiscussChannel } from "@mail/discuss/core/common/discuss_channel_model";
-
+import { Thread } from "@mail/core/common/thread_model";
+import { fields } from "@mail/model/export";
 import { patch } from "@web/core/utils/patch";
 
-patch(DiscussChannel.prototype, {
+// Backported from Odoo 20 (`DiscussChannel`); on Odoo 19 the channel is a Thread.
+patch(Thread.prototype, {
     setup() {
         super.setup(...arguments);
-        this.from_ai_automation = false;
+        this.from_ai_automation = fields.Attr(false);
     },
 });

@@ -3,7 +3,7 @@ import "@ai/discuss/core/common/composer_patch";
 //Ensure base voice_message patch is applied before this one
 import "@mail/discuss/voice_message/common/composer_patch";
 import { useVoiceRecorder } from "@mail/discuss/voice_message/common/voice_recorder";
-import { proxy } from "@odoo/owl";
+import { useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { rpc } from "@web/core/network/rpc";
 import { useService } from "@web/core/utils/hooks";
@@ -14,7 +14,7 @@ patch(Composer.prototype, {
     setup() {
         super.setup();
         const notificationService = this.env.services.notification;
-        this.voiceTranscription = proxy({ isTranscribing: false });
+        this.voiceTranscription = useState({ isTranscribing: false });
         this.uiService = useService("ui");
 
         if (this.props.composer.targetThread?.channel?.isAiChat) {

@@ -11,20 +11,12 @@ export class AiSession extends Record {
 
     setup() {
         super.setup(...arguments);
-        this.onChange(
-            () => [this.channel_id, this.loop_state, this.userInputRequest],
-            function onChangeAiSessionState() {
-                this.syncAiSessionState();
-            },
-            { immediate: true, initialRun: false },
+        Record.onChange(
+            this,
+            ["channel_id", "loop_state", "userInputRequest"],
+            () => this.syncAiSessionState(),
         );
-        this.onChange(
-            () => [this.clientToolRequest],
-            function onChangeClientToolRequest() {
-                this.processPendingClientTool();
-            },
-            { immediate: true, initialRun: false },
-        );
+        Record.onChange(this, ["clientToolRequest"], () => this.processPendingClientTool());
     }
 
     /** @type {number} */
@@ -33,7 +25,7 @@ export class AiSession extends Record {
     agent_id = fields.One("ai.agent");
     parent_session_id = fields.One("ai.session");
     clientToolRequest = false;
-    channel_id = fields.One("discuss.channel", { inverse: "ai_session_ids" });
+    channel_id = fields.One("Thread", { inverse: "ai_session_ids" });
     loop_state = "ready";
     res_id = undefined;
     res_model = undefined;

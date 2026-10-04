@@ -75,8 +75,9 @@ export const aiChatLauncherService = {
             if (!["chatter_ai_button", "systray_ai_button"].includes(interfaceKey)) {
                 return;
             }
-            return mailStore.messagingMenu.aiChatTab.channels.find(
+            return Object.values(mailStore.Thread.records).find(
                 (channel) =>
+                    channel.isAiChat &&
                     channel.isLoaded &&
                     channel.ai_session_ids.some(
                         (session) =>
@@ -137,9 +138,10 @@ export const aiChatLauncherService = {
                     { context }
                 );
                 services["mail.store"].insert(data);
-                const channel = await services["mail.store"]["discuss.channel"].getOrFetch(
-                    ai_channel_id
-                );
+                const channel = await services["mail.store"].Thread.getOrFetch({
+                    model: "discuss.channel",
+                    id: ai_channel_id,
+                });
                 // add sendMessage and logNote only if the model inherits from mail.thread
                 if (interfaceKey === "chatter_ai_button" && model_has_thread) {
                     aiSpecialActions = {

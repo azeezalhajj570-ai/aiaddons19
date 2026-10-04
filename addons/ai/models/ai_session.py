@@ -222,7 +222,8 @@ class AiSession(models.Model):
     def _publish_response_state(self):
         self.ensure_one()
         if self.channel_id:
-            Store(bus_channel=self.channel_id).add(self, "_store_session_fields")
+            # Odoo 19's Store.add does not publish on its own.
+            Store(bus_channel=self.channel_id).add(self, "_store_session_fields").bus_send()
 
     def _set_pending_tool_call(self, pending_tool_call):
         """Set the pending tool call; the caller publishes the updated loop state."""
@@ -1369,7 +1370,9 @@ class AiSession(models.Model):
                 message = self.env._("⛔ Auto-approval deactivated.")
             self.turn_notifications = (self.turn_notifications or []) + [{'type': 'ai_note', 'body': message}]
 
-        Store(bus_channel=self.channel_id).add(self, "_store_session_fields")
+        if self.channel_id:
+            # Odoo 19's Store.add does not publish on its own.
+            Store(bus_channel=self.channel_id).add(self, "_store_session_fields").bus_send()
 
     def validate_session_update(self, updated_config: dict):
         session_config = self.get_session_config()

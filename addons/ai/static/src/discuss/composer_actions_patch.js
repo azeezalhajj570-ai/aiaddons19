@@ -1,10 +1,5 @@
 import { patch } from "@web/core/utils/patch";
-import {
-    registerComposerAction,
-    ComposerAction,
-    describeComposerActionGroup,
-} from "@mail/core/common/composer_actions";
-import { VoiceRecorder } from "@mail/discuss/voice_message/common/voice_recorder";
+import { registerComposerAction, ComposerAction } from "@mail/core/common/composer_actions";
 import { Component } from "@odoo/owl";
 import { AiSessionToggle } from "@ai/components/ai_composer_actions_selectors/ai_session_toggle";
 import { _t } from "@web/core/l10n/translation";
@@ -76,25 +71,6 @@ patch(ComposerAction.prototype, {
         return super._sequenceQuick(...arguments);
     },
 });
-patch(VoiceRecorder.prototype, {
-    get title() {
-        if (this.props.composer.targetThread?.channel?.isAiChat) {
-            return _t("Convert to text (%(keyboard_command_1)s) or Send (%(keyboard_command_2)s)", {
-                keyboard_command_1: "Alt+V",
-                keyboard_command_2: "Enter",
-            });
-        }
-        return super.title;
-    },
-    get cancelTitle() {
-        if (this.props.composer.targetThread?.channel?.isAiChat) {
-            return _t("Cancel (%(keyboard_command)s)", { keyboard_command: "Esc" });
-        }
-        return super.cancelTitle;
-    },
-});
-
-describeComposerActionGroup(20, { name: _t("AI Chat Settings") });
 
 registerComposerAction("voice-transcribing", {
     component: class VoiceMessageTranscribingSpinner extends Component {
@@ -106,93 +82,63 @@ registerComposerAction("voice-transcribing", {
 });
 
 registerComposerAction("toggle-action-auto-approve", {
-    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
-    closingModeAsDropdown: "none",
-    extraContentComponent: AiSessionToggle,
-    extraContentComponentProps: ({ composer }) => ({
+    component: AiSessionToggle,
+    componentProps: ({ composer }) => ({
         aiSession: composer.targetThread.channel.aiSession,
         configAttribute: "auto_confirm",
+        icon: "fa fa-check-circle",
+        label: _t("Auto-Approve Actions"),
     }),
-    icon: "verified",
-    name: _t("Auto-Approve Actions"),
-    onSelected({ composer }) {
-        const aiSession = composer.targetThread.channel.aiSession;
-        aiSession.updateConfig("auto_confirm", !aiSession.config["auto_confirm"]);
-    },
+    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
     sequence: 20,
-    sequenceGroup: 20,
 });
 
 registerComposerAction("toggle-web-search", {
-    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
-    closingModeAsDropdown: "none",
-    extraContentComponent: AiSessionToggle,
-    extraContentComponentProps: ({ composer }) => ({
+    component: AiSessionToggle,
+    componentProps: ({ composer }) => ({
         aiSession: composer.targetThread.channel.aiSession,
         configAttribute: "enable_web_search",
+        icon: "fa fa-search",
+        label: _t("Web Search"),
     }),
-    icon: "search",
-    name: _t("Web Search"),
-    onSelected({ composer }) {
-        const aiSession = composer.targetThread.channel.aiSession;
-        aiSession.updateConfig("enable_web_search", !aiSession.config["enable_web_search"]);
-    },
+    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
     sequence: 21,
-    sequenceGroup: 20,
 });
 
 registerComposerAction("toggle-restrict-to-resources", {
+    component: AiSessionToggle,
+    componentProps: ({ composer }) => ({
+        aiSession: composer.targetThread.channel.aiSession,
+        configAttribute: "enable_resources_only",
+        icon: "fa fa-book",
+        label: _t("Restrict to Sources"),
+    }),
     condition: ({ composer }) =>
         composer.targetThread?.channel?.isAiChat &&
         (composer.targetThread?.channel?.ai_agent_id?.sources_ids?.length ?? 0) > 0,
-    closingModeAsDropdown: "none",
-    extraContentComponent: AiSessionToggle,
-    extraContentComponentProps: ({ composer }) => ({
-        aiSession: composer.targetThread.channel.aiSession,
-        configAttribute: "enable_resources_only",
-    }),
-    icon: "book",
-    name: _t("Restrict to Sources"),
-    onSelected({ composer }) {
-        const aiSession = composer.targetThread.channel.aiSession;
-        aiSession.updateConfig("enable_resources_only", !aiSession.config["enable_resources_only"]);
-    },
     sequence: 22,
-    sequenceGroup: 20,
 });
 
 registerComposerAction("toggle-agent-steps", {
-    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
-    closingModeAsDropdown: "none",
-    extraContentComponent: AiSessionToggle,
-    extraContentComponentProps: ({ composer }) => ({
+    component: AiSessionToggle,
+    componentProps: ({ composer }) => ({
         aiSession: composer.targetThread.channel.aiSession,
         configAttribute: "show_agent_steps",
+        icon: "fa fa-check-square-o",
+        label: _t("Show Steps"),
     }),
-    icon: "checklist",
-    name: _t("Show Steps"),
-    onSelected({ composer }) {
-        const aiSession = composer.targetThread.channel.aiSession;
-        aiSession.updateConfig("show_agent_steps", !aiSession.config["show_agent_steps"]);
-    },
+    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
     sequence: 23,
-    sequenceGroup: 20,
 });
 
 registerComposerAction("toggle-think-longer", {
-    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
-    closingModeAsDropdown: "none",
-    extraContentComponent: AiSessionToggle,
-    extraContentComponentProps: ({ composer }) => ({
+    component: AiSessionToggle,
+    componentProps: ({ composer }) => ({
         aiSession: composer.targetThread.channel.aiSession,
         configAttribute: "enable_think_longer",
+        icon: "fa fa-lightbulb-o",
+        label: _t("Think Longer"),
     }),
-    icon: "lightbulb",
-    name: _t("Think Longer"),
-    onSelected({ composer }) {
-        const aiSession = composer.targetThread.channel.aiSession;
-        aiSession.updateConfig("enable_think_longer", !aiSession.config["enable_think_longer"]);
-    },
+    condition: ({ composer }) => composer.targetThread?.channel?.isAiChat,
     sequence: 24,
-    sequenceGroup: 20,
 });

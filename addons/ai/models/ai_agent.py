@@ -200,7 +200,9 @@ class AIAgent(models.Model):
 
         return {
             'ai_channel_id': channel.id,
-            'data': store,
+            # Odoo 19's Store is not JSON-serializable directly; the client
+            # expects the resolved dict (Odoo 20 serialized the Store itself).
+            'data': store.get_result(),
             'model_has_thread': model_has_thread
         }
 

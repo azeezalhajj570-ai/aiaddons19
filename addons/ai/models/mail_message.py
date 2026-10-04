@@ -21,7 +21,7 @@ class MailMessage(models.Model):
         return message_parts
 
     def _store_author_dynamic_fields(self, res):
-        super()._store_author_dynamic_fields(res)
+        # Odoo 19 has no base `_store_author_dynamic_fields`.
         if self.channel_id.channel_type == "ai_chat":
             # sudo: ai.agent - knowing if a partner is an AI agent is acceptable
             res.many("agent_ids", [], sudo=True)

@@ -2,12 +2,14 @@
 <templates xml:space="preserve">
 
     <t t-name="ai.SessionToggle">
-        <span class="ms-4"/>
-        <CheckBox
-            id="this.props.aiSession.id"
-            value="this.props.aiSession.config[this.attr]"
-            className="'o_field_boolean o_boolean_toggle form-switch m-0 pe-none ms-auto '"
-        />
+        <CheckboxItem
+            checked="this.checked"
+            closingMode="'none'"
+            onSelected="() => this.toggle()"
+        >
+            <i t-if="this.props.icon" t-att-class="this.props.icon + ' me-2'"/>
+            <span t-out="this.props.label"/>
+        </CheckboxItem>
     </t>
 
 </templates>

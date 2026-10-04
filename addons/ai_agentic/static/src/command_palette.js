@@ -1,7 +1,6 @@
-import { Component, t, usePlugin, useProps, useScope } from "@odoo/owl";
+import { Component, t, useProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { normalize } from "@web/core/l10n/utils";
-import { ORM } from "@web/core/orm_plugin";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { imageUrl } from "@web/core/utils/urls";
@@ -30,13 +29,13 @@ export class AICommand extends Component {
     }
 }
 export class AICommandPalette {
-    constructor(options) {
+    constructor(env, options) {
+        this.env = env;
         this.options = options;
-        this.orm = usePlugin(ORM);
-        this.ui = useService("ui");
-        this.actions = useService("action");
+        this.orm = env.services.orm;
+        this.ui = env.services.ui;
+        this.actions = env.services.action;
         this.commands = [];
-        this.options = options;
         this.cleanedTerm = normalize(this.options.searchValue);
         this.agents = [];
     }
@@ -83,11 +82,10 @@ export class AICommandPalette {
 
 commandProviderRegistry.add("chat_with_agent", {
     namespace: "@",
-    async provide(options) {
-        const scope = useScope();
-        const palette = scope.run(() => new AICommandPalette(options));
+    async provide(env, options) {
+        const palette = new AICommandPalette(env, options);
         await palette.fetch();
-        palette.buildResults();
+        await palette.buildResults();
         return palette.commands;
     },
 });
